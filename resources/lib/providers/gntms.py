@@ -1,6 +1,31 @@
 from datetime import datetime, timedelta
 import json, requests, time
 
+ip_list= ["34.195.246.37","23.23.166.206","3.222.228.171","3.214.202.128","54.163.144.124","35.153.77.250","34.249.97.32","52.30.221.51","52.209.228.152"]
+
+def ipcheck(headers,credentials=None,session=None):
+    headers_new = headers.copy()
+    headers_new["Host"] = "data.tmsapi.com"
+    if credentials:
+        new_key = credentials["key"]
+    if session:
+        new_key = session['session']['key']
+    url = f"http://data.tmsapi.com/v1.1/stations/10359?lineupId=USA-TX42500-X&api_key={str(new_key)}"
+    try:
+        s = json.loads(requests.get(url, headers=headers).content)        
+        return True, {"key": new_key, "ip": "host"}
+    except (json.JSONDecodeError, requests.HTTPError):
+        for ip in ip_list:
+            #print(f'tms check ip: {ip}')
+            try:
+                url = f"http://{ip}/v1.1/stations/10359?lineupId=USA-TX42500-X&api_key={str(new_key)}"
+                s = json.loads(requests.get(url, headers=headers_new).content)
+                #print(f'ip ok: {ip}')
+                return True, {"key": new_key, "ip": ip}
+            except:
+                pass
+        return False, {"message": "Invalid key"}
+
 def login(data, credentials, headers):
     new_key = credentials["key"]
     url = f"http://data.tmsapi.com/v1.1/stations/10359?lineupId=USA-TX42500-X&api_key={str(new_key)}"
@@ -9,7 +34,11 @@ def login(data, credentials, headers):
         s = json.loads(requests.get(url, headers=headers).content)        
         return True, {"key": new_key}
     except (json.JSONDecodeError, requests.HTTPError):
-        return False, {"message": "Invalid key"}
+        check = ipcheck(headers, credentials)
+        if check[0]:
+            return True, {"key": new_key}
+        else:
+            return False, {"message": "Invalid key"}
     
 def epg_main_links(data, channels, settings, session, headers):
     url_list = []
@@ -17,11 +46,23 @@ def epg_main_links(data, channels, settings, session, headers):
     time_start = datetime.now().strftime("%Y-%m-%dT06:00Z")
     time_end = (datetime.now() + timedelta(int(settings["days"]))).strftime("%Y-%m-%dT06:00Z")
     
-    for i in channels:
-        url_list.append(
-            {"url": f"http://data.tmsapi.com/v1.1/stations/{i}/airings?startDateTime={time_start}&endDateTime={time_end}&imageSize={settings['is']}&imageAspectTV={settings['it']}&api_key={session['session']['key']}",
-             "h": headers, "c": i})
+    check = ipcheck(headers, None, session)
+    if not check[0]:
+        return []
     
+    ip=check[1]["ip"]
+    headers_new=headers.copy()
+    headers_new["Host"] = "data.tmsapi.com"
+
+    for i in channels:
+        if "host" in ip:
+            url_list.append(
+                {"url": f"http://data.tmsapi.com/v1.1/stations/{i}/airings?startDateTime={time_start}&endDateTime={time_end}&imageSize={settings['is']}&imageAspectTV={settings['it']}&api_key={session['session']['key']}",
+                "h": headers, "c": i})
+        else:
+            url_list.append(
+                {"url": f"http://{ip}/v1.1/stations/{i}/airings?startDateTime={time_start}&endDateTime={time_end}&imageSize={settings['is']}&imageAspectTV={settings['it']}&api_key={session['session']['key']}",
+                "h": headers_new, "c": i})
     return url_list
     
 def epg_main_converter(data, channels, settings, ch_id=None, genres={}):
