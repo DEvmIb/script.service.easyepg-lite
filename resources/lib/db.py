@@ -231,7 +231,8 @@ class ProviderManager():
             session = self.user_db.main["sessions"].get(provider_name)
             if session:
                 if session.get("expiration", False) is False or session.get("expiration", 0) > datetime.now().timestamp():
-                    return True
+                    if self.user_db.main["sessions"].get(provider_name)["session"]["key"] == auth_data:
+                        return True
    
         try:          
             session = sys.modules[self.providers[provider_name].get("module", provider_name)].login(
