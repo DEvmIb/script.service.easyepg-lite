@@ -17,7 +17,8 @@ class API():
         self.ip_heeader={}
 
     def ipcheck(self, key):
-
+        if not key or "None" in key:
+            return False
         if (time.time() < self.ip_last):
             #print('last ip ok')
             return True, {"ip": self.ip, "header": self.ip_heeader}
@@ -196,6 +197,8 @@ class API():
             return json.dumps({"success": False, "message": "Connection error."})
 
 def key_checker(new_key):
+    if not new_key or "None" in new_key:
+        return False
     url = f"http://data.tmsapi.com/v1.1/stations/10359?lineupId=USA-TX42500-X&api_key={str(new_key)}"
     try:
         s = json.loads(requests.get(url, headers=general_header).content)        

@@ -10,6 +10,8 @@ def ipcheck(headers,credentials=None,session=None):
         new_key = credentials["key"]
     if session:
         new_key = session['session']['key']
+    if not new_key or "None" in new_key:
+        return False, {"message": "Invalid key"}
     url = f"http://data.tmsapi.com/v1.1/stations/10359?lineupId=USA-TX42500-X&api_key={str(new_key)}"
     try:
         s = json.loads(requests.get(url, headers=headers).content)        
