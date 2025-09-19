@@ -231,7 +231,7 @@ class ProviderManager():
             session = self.user_db.main["sessions"].get(provider_name)
             if session:
                 if session.get("expiration", False) is False or session.get("expiration", 0) > datetime.now().timestamp():
-                    if self.user_db.main["sessions"].get(provider_name)["session"]["key"] == auth_data:
+                    if self.user_db.main["sessions"].get(provider_name)["session"]["key"] == auth_data["key"]:
                         return True
    
         try:          
