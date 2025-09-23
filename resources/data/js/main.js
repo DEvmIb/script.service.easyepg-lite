@@ -1480,19 +1480,19 @@ countrySelection.addEventListener("change", function() {
       if (selectedCountry=='deu') {
         postalCode.value = "14050";
         postalCode.disabled = true
-        doneTypingPostalCode()
+        typingTimer = setTimeout(doneTypingPostalCode, doneTypingInterval);
     }else if (selectedCountry=='che') {
         postalCode.value = "3303";
         postalCode.disabled = true
-        doneTypingPostalCode()
+        typingTimer = setTimeout(doneTypingPostalCode, doneTypingInterval);
     }else if (selectedCountry=='aut') {
         postalCode.value = "6886";
         postalCode.disabled = true
-        doneTypingPostalCode()
+        typingTimer = setTimeout(doneTypingPostalCode, doneTypingInterval);
     }else if (selectedCountry=='gbr') {
     postalCode.value = "CF31";
     postalCode.disabled = true
-    doneTypingPostalCode()
+    typingTimer = setTimeout(doneTypingPostalCode, doneTypingInterval);
     }else{postalCode.value = "";}
     providerTypeSelection.disabled = true;
     allLineups.disabled = true;
