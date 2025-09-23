@@ -1288,7 +1288,7 @@ openSearch.addEventListener("click", function() {
 });
 
 function loadTmsEvent() {
-    chSearch.value = "";
+    //chSearch.value = "";
     if( getCookie("LineupFilter") != "" ) {
         var filterData = JSON.parse(getCookie("LineupFilter"));
         document.getElementById(filterData["Region"]).selected = true;
@@ -1517,12 +1517,12 @@ providerTypeSelection.addEventListener("change", function() {
     };
 });
 
-chSearch.addEventListener('keyup', function() {
-    clearTimeout(typingTimer);
-    if (chSearch.value) {
-        typingTimer = setTimeout(doneTyping, doneTypingInterval);
-    };
-});
+//chSearch.addEventListener('keyup', function() {
+//    clearTimeout(typingTimer);
+//    if (chSearch.value) {
+//        typingTimer = setTimeout(doneTyping, doneTypingInterval);
+//    };
+//});
 
 closeResultsWindow.addEventListener('click', function() {
     tableSection.classList.add("hide-window");
