@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 import json, requests, time
+from sys import argv
 
 def login(data, credentials, headers):
     new_key = credentials["key"]
-    url = f"http://data.tmsapi.com/v1.1/stations/10359?lineupId=USA-TX42500-X&api_key={str(new_key)}"
+    url = f"https://{argv[1]}@tmsepg.ad0lar.ovh/v1.1/stations/10359?lineupId=USA-TX42500-X&api_key=None"
 
     try:
         s = json.loads(requests.get(url, headers=headers).content)        
@@ -19,7 +20,7 @@ def epg_main_links(data, channels, settings, session, headers):
     
     for i in channels:
         url_list.append(
-            {"url": f"http://data.tmsapi.com/v1.1/stations/{i}/airings?startDateTime={time_start}&endDateTime={time_end}&imageSize={settings['is']}&imageAspectTV={settings['it']}&api_key={session['session']['key']}",
+            {"url": f"https://{argv[1]}@tmsepg.ad0lar.ovh/v1.1/stations/{i}/airings?startDateTime={time_start}&endDateTime={time_end}&imageSize={settings['is']}&imageAspectTV={settings['it']}&api_key=None",
              "h": headers, "c": i})
     
     return url_list

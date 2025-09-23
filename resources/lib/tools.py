@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import json, os, requests
-
+from sys import argv
 
 general_header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'}
 
@@ -14,7 +14,7 @@ class API():
         time_start = datetime.now().strftime("%Y-%m-%dT06:00Z")
         time_end = (datetime.now() + timedelta(int(settings["days"]))).strftime("%Y-%m-%dT06:00Z")
         
-        url = f"http://data.tmsapi.com/v1.1/stations/{channel_id}/airings?startDateTime={time_start}&endDateTime={time_end}&imageSize={settings['is']}&imageAspectTV={settings['it']}&api_key={settings['api_key']}"
+        url = f"https://{argv[1]}@tmsepg.ad0lar.ovh/v1.1/stations/{channel_id}/airings?startDateTime={time_start}&endDateTime={time_end}&imageSize={settings['is']}&imageAspectTV={settings['it']}&api_key=None"
         
         try:
             return json.loads(requests.get(url, headers=general_header).content)
@@ -38,8 +38,8 @@ class API():
 
         f_type = "name" if f_type == "chname" else "callsign"
 
-        url = f"https://data.tmsapi.com/v1.1/stations/search?q={value}&limit=100&queryFields={f_type}" \
-              f"&api_key={self.key}"
+        url = f"https://{argv[1]}@tmsepg.ad0lar.ovh/v1.1/stations/search?q={value}&limit=100&queryFields={f_type}" \
+              f"&api_key=None"
 
         try:
             s = requests.get(url, headers=general_header)
@@ -79,8 +79,8 @@ class API():
                     i[0]["chExists"] = False
                 return json.dumps({"success": True, "result": i})
         
-        url = f"https://data.tmsapi.com/v1.1/stations/{value}?imageSize=Md" \
-              f"&api_key={self.key}"
+        url = f"https://{argv[1]}@tmsepg.ad0lar.ovh/v1.1/stations/{value}?imageSize=Md" \
+              f"&api_key=None"
 
         try:
             s = requests.get(url, headers=general_header)
@@ -103,8 +103,8 @@ class API():
             return json.dumps({"success": False, "message": "Connection error."})
 
     def get_lineups(self, country, code):
-        url = f"https://data.tmsapi.com/v1.1/lineups?country={country.upper()}&postalCode={code}" \
-              f"&api_key={self.key}"
+        url = f"https://{argv[1]}@tmsepg.ad0lar.ovh/v1.1/lineups?country={country.upper()}&postalCode={code}" \
+              f"&api_key=None"
         
         try:
             s = requests.get(url, headers=general_header)
@@ -120,8 +120,8 @@ class API():
             return json.dumps({"success": False, "message": "Connection error."})
 
     def get_lineup_channels(self, id):
-        url = f"https://data.tmsapi.com/v1.1/lineups/{id}/channels?imageSize=Md&enhancedCallSign=true" \
-              f"&api_key={self.key}"
+        url = f"https://{argv[1]}@tmsepg.ad0lar.ovh/v1.1/lineups/{id}/channels?imageSize=Md&enhancedCallSign=true" \
+              f"&api_key=None"
 
         try:
             s = requests.get(url, headers=general_header)
@@ -143,7 +143,7 @@ class API():
             return json.dumps({"success": False, "message": "Connection error."})
 
 def key_checker(new_key):
-        url = f"http://data.tmsapi.com/v1.1/stations/10359?lineupId=USA-TX42500-X&api_key={str(new_key)}"
+        url = f"https://{argv[1]}@tmsepg.ad0lar.ovh/v1.1/stations/10359?lineupId=USA-TX42500-X&api_key=None"
 
         try:
             json.loads(requests.get(url, headers=general_header).content)
