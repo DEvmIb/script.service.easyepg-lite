@@ -1295,7 +1295,7 @@ function loadTmsEvent() {
         document.getElementById(filterData["Country"]).selected = true;
         countrySelection.disabled = false;
         postalCode.value = filterData["PostalCode"];
-        postalCode.disabled = false;
+        postalCode.disabled = true;
         document.getElementById(filterData["ServiceType"]).selected = true;
         doneTypingPostalCode();
     } else {
@@ -1471,7 +1471,7 @@ countrySelection.addEventListener("change", function() {
             postalCode.value = countryDefaults[selectedCountry.toUpperCase()];
             doneTypingPostalCode();
         } else {
-            postalCode.disabled = false;
+            postalCode.disabled = true;
         };
     } else {
         postalCode.disabled = true;
