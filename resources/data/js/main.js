@@ -1536,7 +1536,7 @@ closeResultsWindow.addEventListener('click', function() {
     // loadChannelList();
 });
 
-chSearch.addEventListener('search', function() {
+/* chSearch.addEventListener('search', function() {
     tableSection.classList.add("hide-window");
     setTimeout(function() {
         tableSection.style.display = "none";
@@ -1544,7 +1544,7 @@ chSearch.addEventListener('search', function() {
         loadChannelList();
     }, 200);
     // loadChannelList();
-});
+}); */
 
 function doneTyping() {
     // searchResultsText.innerText = "Search results";
