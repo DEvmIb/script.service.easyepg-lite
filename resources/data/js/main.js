@@ -1476,7 +1476,24 @@ countrySelection.addEventListener("change", function() {
     } else {
         postalCode.disabled = true;
     };
-    postalCode.value = "";
+
+      if (selectedCountry=='deu') {
+        postalCode.value = "14050";
+        postalCode.disabled = true
+        doneTypingPostalCode()
+    }else if (selectedCountry=='che') {
+        postalCode.value = "3303";
+        postalCode.disabled = true
+        doneTypingPostalCode()
+    }else if (selectedCountry=='aut') {
+        postalCode.value = "6886";
+        postalCode.disabled = true
+        doneTypingPostalCode()
+    }else if (selectedCountry=='gbr') {
+    postalCode.value = "CF31";
+    postalCode.disabled = true
+    doneTypingPostalCode()
+    }else{postalCode.value = "";}
     providerTypeSelection.disabled = true;
     allLineups.disabled = true;
     defaultLineup.selected = "selected";
