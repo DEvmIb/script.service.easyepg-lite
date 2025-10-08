@@ -14,7 +14,7 @@ for p in list:
 try:
     import os
     if not os.path.isdir('/usr/share/zoneinfo') or not os.path.isfile('/usr/share/zoneinfo/zone1970.tab') or not os.path.isfile('/usr/share/zoneinfo/tzdata.zi'):
-        print('print missing tzdata')
+        print('print missing tzdata. not ok.')
     else:
         print('tzdata ok')
 except:
