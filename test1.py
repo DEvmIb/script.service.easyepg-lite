@@ -37,7 +37,7 @@ r = requests.Session()
 r.headers = provider_headers
 
 prov_data = r.post(provision_url, json=device_info) #.json()["session"]["provisionData"]
-print(f'prov received: {prov_data}')
+print(f'prov received: {prov_data.content}')
 prov_data=prov_data.json()["session"]["provisionData"]
 #prov_data='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkcyI6IjgzZmJmOGI2LWQ1MmYtNDc0Zi1hM2NiLTc2MTFjNDJlYWE5NyIsImJyIjoibTdjcCIsImlhdCI6MTc2MDUxNjQ1OSwidXAiOiJtN2NwIiwib3AiOiIxMDA0NiIsImljIjp0cnVlLCJkZSI6ImJyYW5kTWFwcGluZyJ9.7-YjYTVf0uf3-K3B0hZgBkY-eXS-J1fcxV29vgbjjDk'
 #print(prov_data)
