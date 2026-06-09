@@ -105,14 +105,16 @@ def epg_main_converter(item, data, channels, settings, ch_id=None, genres={}):
         g["start"] = int(datetime(*(time.strptime(f'{date}{year} {times[0]}', "%d.%m.%Y %H:%M")[0:6])).timestamp())
         g["end"]   = int((datetime(*(time.strptime(f'{date}{year} {times[1]}', "%d.%m.%Y %H:%M")[0:6])) + timedelta(days=date_sw)).timestamp())
         
-        g["title"] = columns[2].findAll("span", {"class": ""})[0].find("a").find("strong").get_text()
+        b = 1 if len(list(columns[2].findAll("span"))) > 2 else 0
+
+        g["title"] = columns[2].findAll("span")[b].find("a").find("strong").get_text()
 
         g["genres"] = [columns[3].find("span").get_text()]
 
         if regional.get(ch_id):
             for s in selected_regionals:
                 d = dict()
-                d["b_id"]  = s + "|" + columns[2].findAll("span", {"class": ""})[0].find("a")["href"].split("/")[-1].replace(".html", "")
+                d["b_id"]  = s + "|" + columns[2].findAll("span")[b].find("a")["href"].split("/")[-1].replace(".html", "")
                 d["c_id"]  = s
                 for i in g.keys():
                     d[i] = g[i]
@@ -131,7 +133,7 @@ def epg_main_converter(item, data, channels, settings, ch_id=None, genres={}):
                             airings.append(d)
 
         else:
-            g["b_id"]  = columns[2].findAll("span", {"class": ""})[0].find("a")["href"].split("/")[-1].replace(".html", "")
+            g["b_id"]  = columns[2].findAll("span")[b].find("a")["href"].split("/")[-1].replace(".html", "")
             g["c_id"]  = ch_id
 
             airings.append(g)
