@@ -497,11 +497,8 @@ class ProviderManager():
         if self.exit or self.cancellation:
             return
         if tms_retry:
-            sleep(3)
-            if tms_retry % 2 == 0:
-                item["url"] = item["tms2"]
-            else:
-                item["url"] = item["tms3"]
+            sleep(6)
+            item["url"] = item["tms3"]
             del item["tms"], item["d"]
         else:
             sleep(self.providers[provider_name].get("dl_delay", 0))

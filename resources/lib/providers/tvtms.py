@@ -101,10 +101,10 @@ def epg_advanced_converter(item, data, cache, settings):
 
         g["date"] = int(p["releaseYear"]) if p.get("releaseYear", "0") != "0" else None
     
-    # TMS 2: tvtv.ca
+    # TMS 2: tvtv.us
     if p.get("type"):
         g["desc"] = p.get("description")
-        g["image"] = f"https://www.tvtv.ca{p['image']}".split("?")[0] if p.get("image") else None
+        g["image"] = f"https://www.tvtv.us{p['image']}".split("?")[0] if p.get("image") else None
         g["genres"] = p.get("genres", [])
 
         directors = []
