@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import json, os, requests
-
+from resources.lib import basedir
 
 general_header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'}
 
@@ -67,11 +67,11 @@ class API():
 
     def get_channel_info(self, value, file=None):
         if file:
-            with open(f"{self.file_paths['storage']}cache/station_{value}.json", "w", encoding="utf-8") as f:
+            with open(basedir.get_path(f"cache/station_{value}.json", self.file_paths['storage']), "w", encoding="utf-8") as f:
                 f.write(json.dumps(file))
 
-        if os.path.exists(f"{self.file_paths['storage']}cache/station_{value}.json"):
-            with open(f"{self.file_paths['storage']}cache/station_{value}.json", "r", encoding="utf-8") as f:
+        if os.path.exists(basedir.get_path(f"cache/station_{value}.json", self.file_paths['storage'])):
+            with open(basedir.get_path(f"cache/station_{value}.json", self.file_paths['storage']), "r", encoding="utf-8") as f:
                 i = json.load(f)
                 if self.channels.get(i[0]["stationId"]):
                     i[0]["chExists"] = True
@@ -88,7 +88,7 @@ class API():
             if type(r) != list and r.get("errorCode"):
                 return json.dumps({"success": False, "message": f"Channel not found (Code: {r['errorCode']})."})
             else:
-                with open(f"{self.file_paths['storage']}cache/station_{value}.json", "w", encoding="utf-8") as f:
+                with open(basedir.get_path(f"cache/station_{value}.json", self.file_paths['storage']), "w", encoding="utf-8") as f:
                     json.dump(r, f)
                 for n, i in enumerate(r):
                     if self.channels.get(i["stationId"]):
