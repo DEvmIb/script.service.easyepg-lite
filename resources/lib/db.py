@@ -497,8 +497,11 @@ class ProviderManager():
         if self.exit or self.cancellation:
             return
         if tms_retry:
-            sleep(6)
-            item["url"] = item["tms3"]
+            sleep(0.3)
+            if tms_retry % 2 == 0:
+                item["url"] = item["tms2"]
+            else:
+                item["url"] = item["tms3"]
             del item["tms"], item["d"]
         else:
             sleep(self.providers[provider_name].get("dl_delay", 0))
@@ -507,7 +510,7 @@ class ProviderManager():
             try:
                 if item.get("tms"):
                     gh = "; ".join(f"{i}: {general_header[i]}" for i in general_header.keys())
-                    r = self.getProcessOutput(f'{curl} -s -m {item.get("t", self.providers[provider_name].get("timeout", 60))} "{item["tms"]}" -H "{item["h"] if item.get("h") else gh}"{(" --data-raw "+item["d"]) if item.get("d") else ""}')
+                    r = self.getProcessOutput(f'{curl} -s -m {item.get("t", self.providers[provider_name].get("timeout", 60))} "{item["tms"]}" -H "{gh}"{(" --data-raw "+item["d"]) if item.get("d") else ""}')
                 elif item.get("d"):
                     r = requests.post(item["url"], headers=item.get("h", general_header), data=item["d"], cookies=item.get("cc", {}), timeout=item.get("t", self.providers[provider_name].get("timeout", 60)))
                 elif item.get("j"):

@@ -28,6 +28,8 @@
         "adv_loader": true,
         "duplicate_check_req": true,
 
+        "is_utc": true,
+
         "menu_visibility": false
 
     },
