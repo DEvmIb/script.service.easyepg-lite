@@ -4,7 +4,7 @@ from threading import Thread
 from time import sleep
 import gzip, json, os, shutil, time, traceback
 import xmltodict
-
+from resources.lib import basedir
 
 class Grabber():
     def __init__(self, file_paths, provider_manager, user_db):
@@ -19,11 +19,11 @@ class Grabber():
         self.file_available = False
         self.file_created = "Never"
 
-        if not os.path.isdir(f"{file_paths['storage']}xml"):
-            os.mkdir(f"{file_paths['storage']}xml")
-        if os.path.exists(f"{file_paths['storage']}xml/epg.xml"):
+        if not os.path.isdir(basedir.get_path("xml", file_paths['storage'])):
+            os.mkdir(basedir.get_path("xml", file_paths['storage']))
+        if os.path.exists(basedir.get_path("xml/epg.xml", file_paths['storage'])):
             self.file_available = True
-            self.file_created = datetime.fromtimestamp(os.path.getmtime(f"{self.file_paths['storage']}xml/epg.xml")).strftime('%Y-%m-%d %H:%M:%S')
+            self.file_created = datetime.fromtimestamp(os.path.getmtime(basedir.get_path("xml/epg.xml", self.file_paths['storage']))).strftime('%Y-%m-%d %H:%M:%S')
         
         self.started = False
         self.cancellation = False
@@ -35,7 +35,7 @@ class Grabber():
         if self.user_db.main["settings"]["ag"] == "yes":
             start_up = True
         if self.user_db.main["settings"]["ag"] == "out" and self.file_available and \
-            int(self.user_db.main["settings"]["rate"]) * 3600 + os.path.getmtime(f"{self.file_paths['storage']}xml/epg.xml") <= datetime(*(time.strptime(f'{start_dt} {self.user_db.main["settings"]["ut"]}', "%Y%m%d %H:%M")[0:6])).timestamp():
+            int(self.user_db.main["settings"]["rate"]) * 3600 + os.path.getmtime(basedir.get_path("xml/epg.xml", self.file_paths['storage'])) <= datetime(*(time.strptime(f'{start_dt} {self.user_db.main["settings"]["ut"]}', "%Y%m%d %H:%M")[0:6])).timestamp():
                 start_up = True
         if self.user_db.main["settings"]["ag"] == "out" and not self.file_available:
             start_up = True
@@ -73,19 +73,19 @@ class Grabber():
             missing_genres = []
 
             # PREPARING FILES/DIRECTORIES
-            if not os.path.exists(f"{self.file_paths['storage']}cache/epg_cache"):
-                os.mkdir(f"{self.file_paths['storage']}cache/epg_cache")
+            if not os.path.exists(basedir.get_path("cache/epg_cache", self.file_paths['storage'])):
+                os.makedirs(basedir.get_path("cache/epg_cache", self.file_paths['storage']), exist_ok=True)
             else:
-                shutil.rmtree(f"{self.file_paths['storage']}cache/epg_cache", ignore_errors=True)
-                os.mkdir(f"{self.file_paths['storage']}cache/epg_cache")
+                shutil.rmtree(basedir.get_path("cache/epg_cache", self.file_paths['storage']), ignore_errors=True)
+                os.makedirs(basedir.get_path("cache/epg_cache", self.file_paths['storage']),exist_ok=True)
 
-            if os.path.exists(f"{self.file_paths['storage']}xml/test.xml"):
-                os.remove(f"{self.file_paths['storage']}xml/test.xml")
+            if os.path.exists(basedir.get_path("xml/test.xml", self.file_paths['storage'])):
+                os.remove(basedir.get_path("xml/test.xml", self.file_paths['storage']))
 
-            if os.path.exists(f"{self.file_paths['storage']}grabber_error_log_old.txt"):
-                os.remove(f"{self.file_paths['storage']}grabber_error_log_old.txt")
-            if os.path.exists(f"{self.file_paths['storage']}grabber_error_log.txt"):
-                os.rename(f"{self.file_paths['storage']}grabber_error_log.txt", f"{self.file_paths['storage']}grabber_error_log_old.txt")
+            if os.path.exists(basedir.get_path("grabber_error_log_old.txt", self.file_paths['storage'])):
+                os.remove(basedir.get_path("grabber_error_log_old.txt", self.file_paths['storage']))
+            if os.path.exists(basedir.get_path("grabber_error_log.txt", self.file_paths['storage'])):
+                os.rename(basedir.get_path("grabber_error_log.txt", self.file_paths['storage']), basedir.get_path("grabber_error_log_old.txt", self.file_paths['storage']))
 
             # DOWNLOAD FILES
             self.status = "Downloading EPG data..."
@@ -129,11 +129,11 @@ class Grabber():
                         self.pr.advanced_downloader(provider, self.pr.main_downloader(provider))
                     else:
                         self.pr.main_downloader(provider)
-                    if os.path.exists(f"{self.file_paths['storage']}grabber_error_log.txt"):
+                    if os.path.exists(basedir.get_path("grabber_error_log.txt", self.file_paths['storage'])):
                         self.warning = True
                 except Exception as e:
                     try:
-                        with open(f"{self.file_paths['storage']}grabber_error_log.txt", "a+", encoding="utf-8") as log:
+                        with open(basedir.get_path("grabber_error_log.txt", self.file_paths['storage']), "a+", encoding="utf-8") as log:
                             log.write(f"--- {provider.upper()} WARNING LOG: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
                             traceback.print_exc(file=log)
                             log.write(f"--- {provider.upper()} WARNING LOG END ---\n\n")
@@ -152,7 +152,7 @@ class Grabber():
             self.worker = 0
             self.basic_value = 1 / len(self.user_db.main["channels"])
 
-            with open(f"{self.file_paths['storage']}xml/test.xml", "a+", encoding="UTF-8") as file:
+            with open(basedir.get_path("xml/test.xml", self.file_paths['storage']), "a+", encoding="UTF-8") as file:
 
                 # GENERAL INFO
                 file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
@@ -427,22 +427,22 @@ class Grabber():
                 
                 file.write('</tv>\n')
             
-            if os.path.exists(f"{self.file_paths['storage']}xml/epg.xml"):
-                os.remove(f"{self.file_paths['storage']}xml/epg.xml")
-            os.rename(f"{self.file_paths['storage']}xml/test.xml", f"{self.file_paths['storage']}xml/epg.xml")       
+            if os.path.exists(basedir.get_path("xml/epg.xml", self.file_paths['storage'])):
+                os.remove(basedir.get_path("xml/epg.xml", self.file_paths['storage']))
+            os.rename(basedir.get_path("xml/test.xml", self.file_paths['storage']), basedir.get_path("xml/epg.xml", self.file_paths['storage']))       
 
             self.status = "Creating compressed file..."
-            with open(f"{self.file_paths['storage']}xml/epg.xml", 'rb') as f_in, gzip.open(f"{self.file_paths['storage']}xml/epg.xml.gz", 'wb') as f_out:
+            with open(basedir.get_path("xml/epg.xml", self.file_paths['storage']), 'rb') as f_in, gzip.open(basedir.get_path("xml/epg.xml.gz", self.file_paths['storage']), 'wb') as f_out:
                 f_out.writelines(f_in)
 
             self.file_available = True
-            self.file_created = datetime.fromtimestamp(os.path.getmtime(f"{self.file_paths['storage']}xml/epg.xml")).strftime('%Y-%m-%d %H:%M:%S')
+            self.file_created = datetime.fromtimestamp(os.path.getmtime(basedir.get_path("xml/epg.xml", self.file_paths['storage']))).strftime('%Y-%m-%d %H:%M:%S')
 
             try:
                 print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: File created successfully!")
                 if len(missing_genres) > 0:
                     try:
-                        with open(f"{self.file_paths['storage']}missing_genres.txt", "w", encoding="utf-8") as log:
+                        with open(basedir.get_path("missing_genres.txt", self.file_paths['storage']), "w", encoding="utf-8") as log:
                             print("\n--- MISSING EIT MAPPINGS ---\n")
                             log.write("--- MISSING EIT MAPPINGS ---\n")
                             for i in missing_genres:
@@ -469,7 +469,7 @@ class Grabber():
         except Exception as e:
             
             if str(e) != "Process stopped.":
-                with open(f"{self.file_paths['storage']}grabber_error_log.txt", "a+", encoding="utf-8") as log:
+                with open(basedir.get_path("grabber_error_log.txt", self.file_paths['storage']), "a+", encoding="utf-8") as log:
                     log.write(f"--- ERROR LOG: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
                     traceback.print_exc(file=log)
                     log.write(f"--- ERROR LOG END ---\n\n")

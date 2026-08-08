@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from importlib import util
 from time import sleep
 import concurrent.futures, json, os, sqlite3, subprocess, sys, traceback
-
+from resources.lib import basedir
 try: 
     from curl_cffi import requests
 except:
@@ -31,12 +31,12 @@ class UserData():
         self.import_data()
 
     def create_cache(self):
-        if not os.path.exists(f"{self.file_paths['storage']}cache"):
-            os.mkdir(f"{self.file_paths['storage']}cache")
+        if not os.path.exists(basedir.get_path("cache", self.file_paths['storage'])):
+            os.makedirs(basedir.get_path("cache", self.file_paths['storage']), exist_ok=True)
 
     def import_data(self):
         try:
-            with open(f"{self.file_paths['storage']}settings.json", "r", encoding="utf-8") as f:
+            with open(basedir.get_path("settings.json", self.file_paths['storage']), "r", encoding="utf-8") as f:
                 self.main = json.load(f)
         except:
             self.main = dict()
@@ -70,7 +70,7 @@ class UserData():
 
     
     def save_settings(self):
-        with open(f"{self.file_paths['storage']}settings.json", "w", encoding="utf-8") as f:
+        with open(basedir.get_path("settings.json", self.file_paths['storage']), "w", encoding="utf-8") as f:
             json.dump(self.main, f)
         return True
 
@@ -81,7 +81,7 @@ class SQLiteEPGManager():
         self.init_db()
 
     def init_db(self):
-        self.conn = sqlite3.connect(f"{self.file_path}epg.db", check_same_thread=False)
+        self.conn = sqlite3.connect(basedir.get_path("epg.db", self.file_path), check_same_thread=False)
         self.c = self.conn.cursor()
         return
 
@@ -238,7 +238,7 @@ class SQLiteChannelManager():
     def load_cache(self):
         for file in os.listdir(f"{self.ch_file_path}cache"):
             if "station_" in file or "station-" in file:
-                with open(f"{self.ch_file_path}cache/{file}", "r", encoding="UTF-8") as f:
+                with open(basedir.get_path(f"cache/{file}", self.ch_file_path), "r", encoding="UTF-8") as f:
                     try:
                         self.update_channel_db("station", "Gracenote TMS", json.load(f))
                     except:
@@ -293,7 +293,7 @@ class ProviderManager():
     def print_error_cache(self, provider):
         try:
             if len(self.error_cache) > 0:
-                with open(f"{self.file_paths['storage']}grabber_error_log.txt", "a+", encoding="utf-8") as log:
+                with open(basedir.get_path(f"grabber_error_log.txt", self.file_paths['storage']), "a+", encoding="utf-8") as log:
                     log.write(f"--- {provider.upper()} WARNING LOG: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
                     for i in self.error_cache:
                         log.write(i+"\n")
@@ -355,7 +355,7 @@ class ProviderManager():
     # LOAD CHLIST
     def ch_loader(self, provider_name, data={}):
         try:
-            with open(f"{self.file_paths['storage']}cache/lineup_{provider_name}.json", "r", encoding="utf-8") as file:
+            with open(basedir.get_path(f"cache/lineup_{provider_name}.json", self.file_paths['storage']), "r", encoding="utf-8") as file:
                 f = json.load(file)
             if f["date"] == datetime.today().strftime("%Y%m%d"):
                 return True, f["ch_list"]
@@ -376,7 +376,7 @@ class ProviderManager():
             )
             try:
                 if provider_name != "xmltv":
-                    with open(f"{self.file_paths['storage']}cache/lineup_{provider_name}.json", "w", encoding="utf-8") as file:
+                    with open(basedir.get_path(f"cache/lineup_{provider_name}.json", self.file_paths['storage']), "w", encoding="utf-8") as file:
                         json.dump({"date": datetime.today().strftime("%Y%m%d"), "ch_list": ch_list}, file)
                     # self.channel_db.update_channel_db("lineup", provider_name, ch_list)
             except:

@@ -3,7 +3,7 @@ from bottle import request, route, run, static_file
 from datetime import datetime, timezone
 from threading import Event
 import json, os, re, requests, signal, traceback
-
+from resources.lib import basedir
 
 stopFlag = Event()
 
@@ -393,7 +393,7 @@ def stop_grabber():
 @route("/download/<file_name>", method="GET")
 def download_file(file_name):
     if file_name == "epg.xml" or file_name == "epg.xml.gz":
-        return static_file(file_name, root=f"{f['storage']}xml/", download=file_name)
+        return static_file(file_name, root=basedir.get_path("xml/", basedir.get_path(f['storage'], f['storage'])), download=file_name)
     else:
         return ""
 
@@ -427,12 +427,12 @@ def provide_json(file_name, ver):
 def upload_m3u_file():
     m3u = request.body.read()
     try:
-        tools.save_file(str(convert_codec(m3u)), f['storage'])
+        tools.save_file(str(convert_codec(m3u)), basedir.get_path(f['storage'], f['storage']))
         g.user_db.main["settings"]["file"] = True
         if g.user_db.main["settings"].get("file_url"):
             del g.user_db.main["settings"]["file_url"]
         g.user_db.save_settings()
-        m3u = tools.read_file(f['storage'])
+        m3u = tools.read_file(basedir.get_path(f['storage'], f['storage']))
         return json.dumps({"success": True, "result": convert_m3u(str(convert_codec(m3u)))})
     except Exception as e:
         print_error(traceback.format_exc())
@@ -441,7 +441,7 @@ def upload_m3u_file():
 @route("/api/playlist-m3u", method="GET")
 def get_m3u_file():
     try:
-        m3u = tools.read_file(f['storage'])
+        m3u = tools.read_file(basedir.get_path(f['storage'], f['storage']))
         return json.dumps({"success": True, "result": convert_m3u(str(convert_codec(m3u)))})
     except FileNotFoundError:
         return json.dumps({"success": False, "message": "No file found."})
@@ -453,11 +453,11 @@ def get_m3u_file():
 def upload_m3u_link():
     try:
         l = json.loads(request.body.read())["link"]
-        tools.save_file(str(convert_codec(load_m3u(l))), f['storage'])
+        tools.save_file(str(convert_codec(load_m3u(l))), basedir.get_path(f['storage'], f['storage']))
         g.user_db.main["settings"]["file"] = True
         g.user_db.main["settings"]["file_url"] = l
         g.user_db.save_settings()
-        m3u = tools.read_file(f['storage'])
+        m3u = tools.read_file(basedir.get_path(f['storage'], f['storage']))
         return json.dumps({"success": True, "result": convert_m3u(str(convert_codec(m3u)))})
     except Exception as e:
         print_error(traceback.format_exc())
@@ -467,8 +467,8 @@ def upload_m3u_link():
 def load_via_m3u_link():
     try:
         l = g.user_db.main["settings"]["file_url"]
-        tools.save_file(str(convert_codec(load_m3u(l))), f['storage'])
-        m3u = tools.read_file(f['storage'])
+        tools.save_file(str(convert_codec(load_m3u(l))), basedir.get_path(f['storage'], f['storage']))
+        m3u = tools.read_file(basedir.get_path(f['storage'], f['storage']))
         return json.dumps({"success": True, "result": convert_m3u(str(convert_codec(m3u)))})
     except Exception as e:
         print_error(traceback.format_exc())
@@ -482,7 +482,7 @@ def convert_codec(text):
     return text
 
 def load_m3u(link):
-    return requests.get(link, allow_redirects=True, timeout=3).content
+    return requests.get(link, allow_redirects=True, timeout=10).content
 
 def convert_m3u(file):
     ch_check = g.user_db.main["channels"]
