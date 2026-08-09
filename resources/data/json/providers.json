@@ -140,8 +140,7 @@
         "max_dl_num": 50,
         "max_dl_threads": 7,
 
-        "adv_loader": true,
-        "advanced_download_threads": 5,
+        "adv_loader": false,
         "dl_delay": 2,
         "ignore_error_codes": [500]
     
@@ -366,8 +365,7 @@
         "max_dl_num": 50,
         "max_dl_threads": 7,
 
-        "adv_loader": true,
-        "advanced_download_threads": 5,
+        "adv_loader": false,
         "dl_delay": 2,
         "ignore_error_codes": [500]
 
