@@ -70,7 +70,7 @@ def epg_advanced_converter(item, data, cache, settings):
         cp = p.find("div", {"id": "cast-panel"})
 
         g["desc"] = mp.findAll("p")[-1].text
-        g["image"] = f"https://www.tvtv.us{mp.find("img")["src"]}"
+        g["image"] = f"https://www.tvtv.us{mp.find('img')['src']}"
         g["genres"] = [i.text for i in mp.find("p", {"class": "weDd3So2"}).findAll("span")]
 
         if cp:
