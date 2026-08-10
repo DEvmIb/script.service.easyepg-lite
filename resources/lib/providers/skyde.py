@@ -79,6 +79,19 @@ def epg_main_converter(item, data, channels, settings, ch_id=None, genres={}):
 
             g["c_id"] = channel["sid"]
             g["b_id"] = f'{channel["sid"]}_{programme["programmeuuid"]}_{programme["st"]}' if programme.get("programmeuuid") else f'{channel["sid"]}_{programme["st"]}'
+          
+            season_id = programme.get("seasonuuid")
+            series_id = programme.get("seriesuuid")
+            bc_id = programme.get("programmeuuid")
+            if season_id:
+              g["image"] = f"https://de.imageservice.sky.com/pd-image/{season_id}/16-9/1024"
+            elif series_id:
+              g["image"] = f"https://de.imageservice.sky.com/pd-image/{series_id}/16-9/1024"
+            elif bc_id:
+              g["image"] = f"https://de.imageservice.sky.com/pd-image/{bc_id}/16-9/1024"
+            else:
+              g["image"] = None
+              
             g["start"] = programme["st"]
             g["end"] = programme["st"] + programme["d"]
             g["title"] = programme["t"]
@@ -138,8 +151,6 @@ def epg_main_converter(item, data, channels, settings, ch_id=None, genres={}):
                 if len(g["desc"]) > 10 and g["desc"][-4:] == "Min." and g["desc"].split(" ")[-2].isdigit():
                     g["desc"] = " ".join(g["desc"].split(" ")[0:-2]) + "."
                 g["desc"] = g["desc"].replace("?.", "?").replace("!.", "!")
-            
-            g["image"] = f"https://de.imageservice.sky.com/pd-image/{g['b_id']}/16-9/1024"
             
             s_num = programme.get("seasonnumber")
             e_num = programme.get("episodenumber")
