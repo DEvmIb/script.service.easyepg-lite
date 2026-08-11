@@ -1,5 +1,11 @@
 import json
-import re, requests
+import re
+import sys
+
+try:
+    from curl_cffi import requests
+except:
+    import requests
 
 
 def channels(data, session, headers={}):
@@ -7,7 +13,10 @@ def channels(data, session, headers={}):
 
     channel_url = f'https://hodor.canalplus.pro/api/v2/{data["myc"]}/epgGrid/{data["grid_id"]}/day/0?channelImageColor=white&discoverMode=true'
 
-    channel_page = requests.get(channel_url, timeout=5, headers=headers)
+    if "curl_cffi.requests" in sys.modules:
+        channel_page = requests.get(channel_url, impersonate="firefox", timeout=5, headers=headers)
+    else:
+        channel_page = requests.get(channel_url, timeout=5, headers=headers)
 
     channel_content = channel_page.json()
 

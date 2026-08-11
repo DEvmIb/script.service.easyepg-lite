@@ -69,9 +69,10 @@ def epg_advanced_converter(item, data, cache, settings):
         mp = p.find("div", {"id": "main-panel"})
         cp = p.find("div", {"id": "cast-panel"})
 
-        g["desc"] = mp.findAll("p")[-1].text
-        g["image"] = f"https://www.tvtv.us{mp.find('img')['src']}"
-        g["genres"] = [i.text for i in mp.find("p", {"class": "weDd3So2"}).findAll("span")]
+        if mp:
+            g["desc"] = mp.findAll("p")[-1].text
+            g["image"] = f"https://www.tvtv.us{mp.find('img')['src']}"
+            g["genres"] = [i.text for i in mp.find("p", {"class": "weDd3So2"}).findAll("span")]
 
         if cp:
             directors = []
@@ -94,12 +95,13 @@ def epg_advanced_converter(item, data, cache, settings):
 
             g["credits"] = {"director": directors, "actor": actors}
 
-        h2 = mp.findAll("h2")
-        if h2 and h2[0].text.isdigit():
-            g["date"] = h2[0].text
-        p = mp.findAll("p")
-        if p and "(" in p[0] and p[0].split("(")[1].replace(")", "").isdigit():
-            g["date"] = p[0].split("(")[1].replace(")", "")
+        if mp:
+            h2 = mp.findAll("h2")
+            if h2 and h2[0].text.isdigit():
+                g["date"] = h2[0].text
+            p = mp.findAll("p")
+            if p and "(" in p[0] and p[0].split("(")[1].replace(")", "").isdigit():
+                g["date"] = p[0].split("(")[1].replace(")", "")
 
         return [g]
 
