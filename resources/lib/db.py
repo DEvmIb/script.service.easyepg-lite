@@ -5,8 +5,10 @@ import concurrent.futures, json, os, sqlite3, subprocess, sys, traceback
 from resources.lib import basedir
 try: 
     from curl_cffi import requests
+    general_header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:153.0) Gecko/20100101 Firefox/153.0'}
 except:
     import requests
+    general_header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'}
 
 from platform import system
 
@@ -21,8 +23,6 @@ elif "Linux" in system() and os.path.isfile("curl"):
 else:
     curl = "curl"
 
-general_header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                                'Chrome/140.0.0.0 Safari/537.36'}
 
 class UserData():
     def __init__(self, file_paths):
@@ -516,7 +516,7 @@ class ProviderManager():
                 elif item.get("j"):
                     r = requests.post(item["url"], headers=item.get("h", general_header), json=item["j"], cookies=item.get("cc", {}), timeout=item.get("t", self.providers[provider_name].get("timeout", 60)))
                 elif ("tvtv.us" in item.get("url", "") or "tvtv.ca" in item.get("url", "") or "hodor.canalplus.pro" in item.get("url", "")) and "curl_cffi.requests" in sys.modules:
-                    r = requests.get(item["url"], impersonate="chrome136", headers=item.get("h", general_header), cookies=item.get("cc", {}), timeout=item.get("t", self.providers[provider_name].get("timeout", 60)))
+                    r = requests.get(item["url"], impersonate="firefox", headers=item.get("h", general_header), cookies=item.get("cc", {}), timeout=item.get("t", self.providers[provider_name].get("timeout", 60)))
                 else:
                     r = requests.get(item["url"], headers=item.get("h", general_header), cookies=item.get("cc", {}), timeout=item.get("t", self.providers[provider_name].get("timeout", 60)))
                 break
