@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from hashlib import sha256
 from uuid import uuid4
 import json
 import requests
@@ -21,6 +22,16 @@ general_headers = \
     }
 
 
+def dyn_hash_creator(headers):
+    headers.update({
+        'x-txn-id': sha256("".join([
+            headers['x-request-tracking-id'],
+            headers['x-request-session-id'],
+            headers['device-id'],
+            str(headers['x-call-time'])
+    ]).encode()).hexdigest()[:32]})
+
+
 def channels(data, session, headers={}):
     chlist = {}
 
@@ -33,9 +44,12 @@ def channels(data, session, headers={}):
             'app_version': data["app_version"],
             'x-user-agent': f'web|web|Chrome-146|{data["app_version"]}|1',
             'x-tv-flow': 'START_UP',
-            'x-tv-step': 'EPG_CHANNEL'
+            'x-tv-step': 'EPG_CHANNEL',
+            'x-call-time': str(int(time.time()*1000))
         }
     )
+    
+    dyn_hash_creator(headers)
 
     channel_page = requests.get(channel_url, timeout=5, headers=headers)
 
