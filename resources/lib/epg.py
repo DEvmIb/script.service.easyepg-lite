@@ -190,8 +190,8 @@ class Grabber():
                     else:
                         lang = "en"
 
-                    results = self.pr.epg_db.retrieve_epg_db_items("gntms" if len(channel.split("_")) == 1 
-                                                                   else channel.split("_")[0], self.user_db.main["channels"][channel]["stationId"])
+                    provider = "gntms" if len(channel.split("_")) == 1 else channel.split("_")[0]
+                    results = self.pr.epg_db.retrieve_epg_db_items(provider, self.user_db.main["channels"][channel]["stationId"])
 
                     inner_value = len(results)
                     inner_worker = 0
