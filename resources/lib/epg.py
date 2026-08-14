@@ -190,8 +190,8 @@ class Grabber():
                     else:
                         lang = "en"
 
-                    provider = "gntms" if len(channel.split("_")) == 1 else channel.split("_")[0]
-                    results = self.pr.epg_db.retrieve_epg_db_items(provider, self.user_db.main["channels"][channel]["stationId"])
+                    results = self.pr.epg_db.retrieve_epg_db_items("gntms" if len(channel.split("_")) == 1 
+                                                                   else channel.split("_")[0], self.user_db.main["channels"][channel]["stationId"])
 
                     inner_value = len(results)
                     inner_worker = 0
@@ -204,7 +204,7 @@ class Grabber():
                                 raise Exception("Process stopped.")
 
                             # DEFINE PARAMS
-                            tz = timezone.utc if self.pr.providers.get("tvtms" if provider == "tvtms" else "gntms" if len(channel.split("_")) == 1 else channel.split("_")[0], {}).get("is_utc") else None
+                            tz = timezone.utc if self.pr.providers.get("tvtms" if "tvtms" in pr_check and len(channel.split("_")) == 1 else "gntms" if len(channel.split("_")) == 1 else channel.split("_")[0], {}).get("is_utc") else None
                             start = datetime.fromtimestamp(float(start), tz).strftime("%Y%m%d%H%M%S +0000")
                             end = datetime.fromtimestamp(float(end), tz).strftime("%Y%m%d%H%M%S +0000")
                             star = json.loads(json.loads(star)) if type(star) == str else {}
