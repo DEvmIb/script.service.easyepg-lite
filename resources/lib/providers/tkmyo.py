@@ -16,6 +16,7 @@ general_headers = \
         'device-name': 'Windows - Chrome',
         'tenant': 'tv',
         'x-call-type': 'GUEST_USER',
+        'x-call-time': 'null',
         'x-channel-map-id': 'null',
         'x-request-session-id': str(uuid4()),
         'x-request-tracking-id': str(uuid4()),
@@ -23,6 +24,7 @@ general_headers = \
 
 
 def dyn_hash_creator(headers):
+    headers.update({'x-call-time': str(int(time.time()*1000))})
     headers.update({
         'x-txn-id': sha256("".join([
             headers['x-request-tracking-id'],
@@ -44,8 +46,7 @@ def channels(data, session, headers={}):
             'app_version': data["app_version"],
             'x-user-agent': f'web|web|Chrome-146|{data["app_version"]}|1',
             'x-tv-flow': 'START_UP',
-            'x-tv-step': 'EPG_CHANNEL',
-            'x-call-time': str(int(time.time()*1000))
+            'x-tv-step': 'EPG_CHANNEL'
         }
     )
     
@@ -79,6 +80,8 @@ def epg_main_links(data, channels, settings, session, headers):
             'x-tv-step': 'EPG_SCHEDULES_V2'
         }
     )
+
+    dyn_hash_creator(headers)
 
     days = int(settings["days"]) if data["max_days"] >= int(settings["days"]) else data["max_days"]
 
@@ -140,6 +143,8 @@ def epg_advanced_links(data, session, settings, programmes, headers={}):
             'x-tv-step': 'EPG_SCHEDULES_V2'
         }
     )
+
+    dyn_hash_creator(headers)
     
     for i in programmes:
         if i is None:

@@ -105,6 +105,9 @@ def epg_main_converter(item, data, channels, settings, ch_id=None, genres={}):
 
     airings = []
 
+    if not item["data"].get("channelEntries"):
+        return airings
+
     for channel in item["data"]["channelEntries"]["data"]:
         
         if channel["channel"]["id"] in channels:
